@@ -104,18 +104,15 @@ public class Snake
 	//Function grow adds new point to snake
 	public void grow(Point newTail)
 	{
-		//checks if newTail is next to old Tail
-		if(this.body[this.length-1].distanceSq(newTail)>1) return;
-		//checks if there's free space for newTail
-		if(!this.isFree(newTail)) return;
 		//adds new point to snake
 		Point tmp[]=new Point[this.length+1];
 		for(int i=0; i<this.length; ++i)
 		{
-			tmp[i]=this.body[i];
+			tmp[i].setLocation(this.body[i]);
 		}
 		tmp[this.length]=newTail;
 		this.body=tmp;		
+		++this.length;
 	}
 	//Function getHead returns head point
 	public Point getHead()

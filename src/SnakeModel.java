@@ -35,8 +35,7 @@ public class SnakeModel
 			{
 				if(!this.snake.isFree(i,j))
 					this.map[i][j]=1;
-				else
-					if(!this.snacks.isFree(i, j))
+				else if(!this.snacks.isFree(i, j))
 						this.map[i][j]=2;
 					else
 						this.map[i][j]=0;
@@ -107,7 +106,10 @@ public class SnakeModel
 		//checks whether there's free space for the move
 		if(this.map[(int)head.getX()][(int)head.getY()-1]==0)
 		{
+			Point tail=this.snake.getTail();
 			this.snake.move(Directions.UP, this.size);
+			this.snake.grow(tail);
+			
 			return true;
 		}
 		//Checks whether there's snack in place we want to move

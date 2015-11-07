@@ -22,8 +22,8 @@ public final class SnakeControler extends JFrame{
 		this.setResizable(false);		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		for(int i=0; i<2; ++i)
-			this.snakeMod.addSnack();
+		
+		this.snakeMod.addSnack();
 		this.snakeMod.refresh();
 		
 		addKeyListener(new KeyListener() {
