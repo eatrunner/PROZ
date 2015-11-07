@@ -31,12 +31,11 @@ public class SnakeView extends JFrame{
 		GameDrawingPanel gamepanel = new GameDrawingPanel(snakeMod);
 		
 		this.add(gamepanel, BorderLayout.CENTER);
-		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
-
-        // Method to execute, initial delay, subsequent delay, time unit
-
-        executor.scheduleAtFixedRate(new RepaintTheBoard(this), 0L, 20L, TimeUnit.MILLISECONDS);
 		
+		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+		
+		executor.scheduleAtFixedRate(new RepaintTheBoard(this), 0L, 20L, TimeUnit.MILLISECONDS);
+			         
 		this.setVisible(true);
 	}
 	

@@ -16,6 +16,11 @@ public final class SnakeControler extends JFrame{
 	{
 		this.snakeMod = new SnakeModel(30);
 		this.snakeView = new SnakeView(this.snakeMod);
+		this.setTitle("SnakeControler");	
+		this.setSize(100,100);
+		this.setLocationRelativeTo(null);
+		this.setResizable(false);		
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		for(int i=0; i<2; ++i)
 			this.snakeMod.addSnack();
@@ -64,7 +69,7 @@ public final class SnakeControler extends JFrame{
 			}
 			
 		});
-
+		this.setVisible(true);
 		
 	}
 	
