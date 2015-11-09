@@ -32,20 +32,16 @@ public class Snacks {
 	//Returns true when succeeded
 	public boolean remove(int x, int y)
 	{
-		Point tmp=new Point(x,y);
+		Point tmp=new Point(x,y), listEl;
 		ListIterator<Point> it=this.snackList.listIterator();
-		while(true)
+		while(it.hasNext())
 		{
-			if(it.equals(tmp))
+			listEl=it.next();
+			if(listEl.equals(tmp))
 			{
-				it.next();
 				it.remove();
 				return true;
 			}
-			else 
-				if(it.hasNext())
-				it.next();
-				else break;
 		}
 		return false;
 	}

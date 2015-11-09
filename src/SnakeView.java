@@ -41,7 +41,8 @@ public class SnakeView extends JFrame{
 	
 }
 
-class RepaintTheBoard implements Runnable{
+class RepaintTheBoard implements Runnable
+{
     SnakeView theBoard;
 
     public RepaintTheBoard(SnakeView theBoard){

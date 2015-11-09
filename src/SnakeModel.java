@@ -6,12 +6,13 @@
 
 import java.awt.*;
 import java.util.*;
-public class SnakeModel 
+public class SnakeModel
 {
 	private int[][] map;//values: 0-free space, 1-snake, 2-snack.
 	private int size;
 	private Snake snake;
 	private Snacks snacks;
+	private Directions move;
 	//SnakeModel Constructor
 	public SnakeModel(int size)
 	{
@@ -19,6 +20,7 @@ public class SnakeModel
 		this.size=size;
 		this.snacks=new Snacks();
 		this.snake=new Snake(size);
+		this.move = Directions.RIGHT;
 		for(int i=0; i<size; ++i)
 			for(int j=0; j<size; ++j)
 				if(this.snake.isFree(i,j))
@@ -106,9 +108,7 @@ public class SnakeModel
 		//checks whether there's free space for the move
 		if(this.map[(int)head.getX()][(int)head.getY()-1]==0)
 		{
-			Point tail=this.snake.getTail();
 			this.snake.move(Directions.UP, this.size);
-			this.snake.grow(tail);
 			
 			return true;
 		}
@@ -226,5 +226,15 @@ public class SnakeModel
 	{
 		int[][] map = this.map;
 		return map;
+	}
+	
+	public void setMove(Directions direct)
+	{
+		this.move=direct;
+	}
+	
+	public Directions getMove()
+	{
+		return this.move;
 	}
 }
