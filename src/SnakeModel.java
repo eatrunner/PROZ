@@ -13,14 +13,16 @@ public class SnakeModel
 	private Snake snake;
 	private Snacks snacks;
 	private Directions move;
+	private int score;
 	//SnakeModel Constructor
 	public SnakeModel(int size)
 	{
 		this.map=new int[size][size];
 		this.size=size;
-		this.snacks=new Snacks();
 		this.snake=new Snake(size);
+		this.snacks=new Snacks();
 		this.move = Directions.RIGHT;
+		this.setScore(0);
 		for(int i=0; i<size; ++i)
 			for(int j=0; j<size; ++j)
 				if(this.snake.isFree(i,j))
@@ -42,6 +44,11 @@ public class SnakeModel
 					else
 						this.map[i][j]=0;
 			}
+	}
+	//Function reset resets Model to its starting point
+	public void reset()
+	{
+		this.snake = new Snake(this.size);
 	}
 	//Function isFree checks whether point given by coordinates is taken
 	private boolean isFree(int x, int y)
@@ -120,6 +127,7 @@ public class SnakeModel
 			this.snake.grow(tail);
 			this.snacks.remove((int)head.getX(), (int)head.getY()-1);
 			this.addSnack();
+			this.setScore(this.getScore() + 1);
 			return true;
 		}
 		if(this.map[(int)head.getX()][(int)head.getY()-1]==1)
@@ -150,6 +158,7 @@ public class SnakeModel
 			this.snake.grow(tail);
 			this.snacks.remove((int)head.getX(),(int)head.getY()+1);
 			this.addSnack();
+			this.setScore(this.getScore() + 1);
 			return true;
 		}
 		if(this.map[(int)head.getX()][(int)head.getY()+1]==1)
@@ -180,6 +189,7 @@ public class SnakeModel
 			this.snake.grow(tail);
 			this.snacks.remove((int)head.getX()+1,(int)head.getY());
 			this.addSnack();
+			this.setScore(this.getScore() + 1);
 			return true;
 		}
 		if(this.map[(int)head.getX()+1][(int)head.getY()]==2)
@@ -210,6 +220,7 @@ public class SnakeModel
 			this.snake.grow(tail);
 			this.snacks.remove((int)head.getX()-1,(int)head.getY());
 			this.addSnack();
+			this.setScore(this.getScore() + 1);
 			return true;
 		}
 		if(this.map[(int)head.getX()-1][(int)head.getY()]==1)
@@ -236,5 +247,12 @@ public class SnakeModel
 	public Directions getMove()
 	{
 		return this.move;
+	}
+	
+	public int getScore() {
+		return score;
+	}
+	public void setScore(int score) {
+		this.score = score;
 	}
 }
