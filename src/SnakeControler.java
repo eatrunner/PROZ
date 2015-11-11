@@ -1,6 +1,10 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -15,6 +19,7 @@ public final class SnakeControler extends JFrame{
 	private JPanel menuPanel;
 	private JButton newGameButton;
 	private JButton exitButton;
+	private JTextArea scoreLayout;
 	//Executor for refreshing the SnakeModel
 	private ScheduledThreadPoolExecutor executor;
 	
@@ -27,7 +32,7 @@ public final class SnakeControler extends JFrame{
 	//SnakeControler Constructor
 	public SnakeControler()
 	{
-		//Creating objects od SnakeModel and SnakeView class
+		//Creating objects of SnakeModel and SnakeView class
 		this.snakeMod = new SnakeModel(30);
 		this.snakeView = new SnakeView(this.snakeMod);
 		
@@ -44,6 +49,12 @@ public final class SnakeControler extends JFrame{
 		menuPanel = new JPanel();
 		newGameButton = new JButton("New Game");
 		exitButton = new JButton("Exit");
+		scoreLayout = new JTextArea("Score: " + String.valueOf(snakeMod.getScore()));
+		scoreLayout.setEditable(false);
+		
+		menuPanel.setLayout(new GridBagLayout());
+		menuPanel.setMaximumSize(new Dimension(100,100));
+		menuPanel.setBackground(Color.WHITE);
 		
 		//Creating Listeners
 		ListenForButton lForButton = new ListenForButton();
@@ -52,12 +63,17 @@ public final class SnakeControler extends JFrame{
 		newGameButton.addActionListener(lForButton);
 		exitButton.addActionListener(lForButton);
 		
-		//Adds buttons to menuPanel
-		menuPanel.add(newGameButton);
-		menuPanel.add(exitButton);
 		
+		//Adds elements to menuPanel
+		this.addComp(menuPanel, scoreLayout, 0, 0, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
+		this.addComp(menuPanel, newGameButton, 0, 1, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
+		this.addComp(menuPanel, exitButton, 0, 2, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
 		//Adds menuPanel to Frame
+		//this.add(new ImageComponent("/home/karol/Pulpit/Chiquita_Minionek3.jpg"));
 		this.add(menuPanel);
+		
+		
+		
 		
 		//Adds snack to SnakeModel
 		this.snakeMod.addSnack();
@@ -138,7 +154,7 @@ public final class SnakeControler extends JFrame{
 				thisSnakeCont.setVisible(true);
 				//Sets executor
 				executor = new ScheduledThreadPoolExecutor(5);
-				executor.scheduleAtFixedRate(new Run(), 0, velocity, TimeUnit.MILLISECONDS);
+				executor.scheduleAtFixedRate(new Run(), 0, 150, TimeUnit.MILLISECONDS);
 			}
 			
 			if(e.getSource() == exitButton)
@@ -170,6 +186,8 @@ public final class SnakeControler extends JFrame{
 				thisSnakeCont.setVisible(false);
 				//Removes snakeView from frame
 				thisSnakeCont.remove(snakeView);
+				//sets present score which will be displayed
+				scoreLayout.setText("Score: " + String.valueOf(snakeMod.getScore()));
 				//Adds menuPanel to frame
 				thisSnakeCont.add(menuPanel);
 				//Displays frame
@@ -182,8 +200,53 @@ public final class SnakeControler extends JFrame{
 				executor.shutdown();
 			}
 		}
+		
 	
 	}
+	
+	private void addComp(JPanel thePanel, JComponent comp, int xPos, int yPos,
+									int compWidth, int compHeight, int place, int stretch)
+		{
+			GridBagConstraints gridConstraints = new GridBagConstraints();
+
+			gridConstraints.gridx = xPos;
+
+			gridConstraints.gridy = yPos;
+
+			gridConstraints.gridwidth = compWidth;
+
+			gridConstraints.gridheight = compHeight;
+
+			gridConstraints.weightx = 1;
+
+			gridConstraints.weighty = 1;
+
+			gridConstraints.insets = new Insets(0,0,0,0);
+
+			gridConstraints.anchor = place;
+
+			gridConstraints.fill = stretch;
+
+			thePanel.add(comp, gridConstraints);
+		}
+	
+	
+	 class ImageComponent extends JComponent {
+
+	      BufferedImage img;
+
+	      public void paint(Graphics g) {
+	         g.drawImage(img, 0, 0, null);
+	      }
+
+	      public ImageComponent(String path) {
+	         try {
+	            img = ImageIO.read(new File(path));
+	         } catch (IOException e) {
+	            e.printStackTrace();
+	         }
+	      }
+	 }
 	
 	public void setFail(boolean fail)
 	{
