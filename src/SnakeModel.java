@@ -86,9 +86,9 @@ public class SnakeModel
 		}
 	}
 	//Function moveSnake move snake(if possible) in provided direction
-	public boolean moveSnake(Directions direct)
+	public boolean moveSnake()
 	{
-		Point head=this.snake.getHead();
+		Directions direct=this.move;
 		switch(direct)
 		{
 		case UP:
