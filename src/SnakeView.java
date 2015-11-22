@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.*;
 
@@ -20,11 +21,15 @@ import java.util.concurrent.TimeUnit;
 
 public class SnakeView extends JFrame
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int width = 600;
     private int height = 600;
-    private int mapSize;
-    private int[][] map;
-    private SnakeModel snakeMod;
+    
+    
+    final private SnakeModel snakeMod;
     private SnakeControler snakeCont; 
     final private SnakeView thisSnakeView = this;
   //Elements of menu
@@ -32,49 +37,24 @@ public class SnakeView extends JFrame
   	private JButton newGameButton;
   	private JButton exitButton;
   	private JTextArea scoreLayout;
+  	TheBoard theBoard;
+  	private ScheduledThreadPoolExecutor executor;
     
-    public SnakeView(final SnakeModel snakeMod)
+    public SnakeView(SnakeModel snakeModel)
     {
-    	this.map = snakeMod.giveMap();
-    	this.mapSize = snakeMod.giveSize();
-    	this.snakeMod = snakeMod;
-    	
+    	this.snakeMod = snakeModel;
     	//Setting frame display options
     	this.setTitle("Snake");	
     	this.setSize(600,600);
     	this.setLocationRelativeTo(null);
     	this.setResizable(false);
-    	
+    	executor = new ScheduledThreadPoolExecutor(5);
     	//Closes app when 'x' button pressed
     	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     	
-    	//Creating MenuPanel and buttons it contains
-    	menuPanel = new JPanel();
-    	newGameButton = new JButton("New Game");
-    	exitButton = new JButton("Exit");
-    	scoreLayout = new JTextArea("Score: " + String.valueOf(snakeMod.getScore()));
-    	scoreLayout.setEditable(false);
-    			
-    	menuPanel.setLayout(new GridBagLayout());
-    	menuPanel.setMaximumSize(new Dimension(100,100));
-    	menuPanel.setBackground(Color.WHITE);
-    	
-    	//Creating Listeners
-    	ListenForButton lForButton = new ListenForButton();
-    		
-    	//Adds ActionListener to buttons
-    	newGameButton.addActionListener(lForButton);
-    	exitButton.addActionListener(lForButton);
-    		
-    			
-    	//Adds elements to menuPanel
-    	this.addComp(menuPanel, scoreLayout, 0, 0, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
-    	this.addComp(menuPanel, newGameButton, 0, 1, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
-    	this.addComp(menuPanel, exitButton, 0, 2, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
-    	//Adds menuPanel to Frame
+    	this.prepareMenu();
     	//this.add(new ImageComponent("/home/karol/Pulpit/Chiquita_Minionek3.jpg"));
-    	this.add(menuPanel);
-    	
+  
     	//Creates KeyListener and adds it to frame
  		addKeyListener(new KeyListener() {
 
@@ -91,7 +71,6 @@ public class SnakeView extends JFrame
     			if (e.getKeyCode()==38)
     			 {
     				 snakeMod.setMove(Directions.UP);
-    				 
     			 }else//When arrow down released sets next move for DOWN 
     				 if(e.getKeyCode()==40)
     			 {
@@ -120,9 +99,12 @@ public class SnakeView extends JFrame
     		}
     				
     	});
+ 		
+ 		this.executor.execute(new ShowMenu());
+ 		
+ 		
     			
-    	//Shows frame on desktop
-    	this.setVisible(true);
+    	
     }
     
     private class ListenForButton implements ActionListener
@@ -134,15 +116,14 @@ public class SnakeView extends JFrame
 			
 			if(e.getSource() == newGameButton)
 			{
-				//CHANGING MENU FOR GAMEDISPLAY
-				
-				snakeCont.startGame();
-				//Hides frame
 				thisSnakeView.setVisible(false);
 				thisSnakeView.remove(menuPanel);
+				theBoard = new TheBoard(snakeMod);
+				thisSnakeView.add(theBoard);
 				thisSnakeView.setVisible(true);
-				ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
-		    	executor.scheduleAtFixedRate(new RepaintTheBoard(thisSnakeView), 0, 20, TimeUnit.MILLISECONDS);
+				snakeCont.startGame();
+				executor = new ScheduledThreadPoolExecutor(1);
+		    	executor.scheduleAtFixedRate(theBoard, 0, 20, TimeUnit.MILLISECONDS);
 				
 			}
 			
@@ -179,77 +160,137 @@ public class SnakeView extends JFrame
 
 		thePanel.add(comp, gridConstraints);
 		}
+	
 
 	public void setSnakeControler(SnakeControler snakeCont)
 	{
 		this.snakeCont = snakeCont;
 	}
     
-    public void paint(Graphics g) {
+       
 
-    	// Allows me to make many settings changes in regards to graphics
-
-    	Graphics2D graphicSettings = (Graphics2D)g;
-
-    	// Draw a black background that is as big as the game board
-
-    	graphicSettings.setColor(Color.BLACK);
-
-    	graphicSettings.fillRect(0, 0, this.width, this.height);
-
-    	// Set rendering rules
-
-    	// graphicSettings.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    		        
-    	//Snake body will be white
-    		        
-    	graphicSettings.setColor(Color.WHITE);
-    		        
-    	//Set snake on display
-    		        
-    	for(int i=0; i<this.mapSize; ++i)
-    		for(int j=0; j<this.mapSize; ++j)
-    			if(this.map[i][j]==1)
-    				graphicSettings.fillRect(i*this.width/this.mapSize, j*this.height/this.mapSize, 
-    		        							this.width/this.mapSize, this.height/this.mapSize);
-    		        
-    	//Set color on orange
-    		        
-    	graphicSettings.setColor(Color.ORANGE);
-    		        
-    	//Set snacks on the display(every digit 2 on this.map)
-    		        
-    	for(int i=0; i<this.mapSize; ++i)
-    		for(int j=0; j<this.mapSize; ++j)
-    			if(this.map[i][j]==2)
-    				graphicSettings.fillRect(i*this.width/this.mapSize, j*this.height/this.mapSize, 
-    		        							this.width/this.mapSize, this.height/this.mapSize);
+    
+    public void stopRefreshing()
+    {
+    	executor.shutdown();
+    	this.remove(theBoard);
+    }
+    
+    private void prepareMenu()
+    {
     	
-    	graphicSettings.setColor(Color.RED);
+    	//Creating MenuPanel and buttons it contains
+    	this.menuPanel = new JPanel();
+    	this.newGameButton = new JButton("New Game");
+    	this.exitButton = new JButton("Exit");
+    	this.scoreLayout = new JTextArea("Score: " + String.valueOf(this.snakeMod.getScore()));
+    	this.scoreLayout.setEditable(false);
+    			
+    	this.menuPanel.setLayout(new GridBagLayout());
+    	this.menuPanel.setMaximumSize(new Dimension(100,100));
+    	this.menuPanel.setBackground(Color.WHITE);
+    	//Creating Listeners
+    	ListenForButton lForButton = new ListenForButton();
     	
-    	graphicSettings.drawString("SCORE: " + String.valueOf(snakeMod.getScore()), 10, 10);
-    	//graphicSettings.
+    	//Adds ActionListener to buttons
+    	this.newGameButton.addActionListener(lForButton);
+    	this.exitButton.addActionListener(lForButton);
+    		
+    			
+    	//Adds elements to menuPanel
+    	this.addComp(this.menuPanel, this.scoreLayout, 0, 0, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
+    	this.addComp(this.menuPanel, this.newGameButton, 0, 1, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
+    	this.addComp(this.menuPanel, this.exitButton, 0, 2, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
     }
     
     public void showMenu()
     {
+    	this.prepareMenu();
     	this.setVisible(false);
-    	this.add(menuPanel);
-    	this.setVisible(true);
+		this.add(this.menuPanel);
+		this.setVisible(true);
     }
     
-    class RepaintTheBoard implements Runnable
+    class ShowMenu implements Runnable
     {
-        SnakeView theBoard;
 
-        public RepaintTheBoard(SnakeView theBoard){
+    	public ShowMenu(){}
 
-            this.theBoard = theBoard;
-        }
+		public void run() {
+			prepareMenu();
+			showMenu();
+			
+		}
+    	
+    }
+    
+    class TheBoard extends JComponent implements Runnable
+    {
+    	 /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
-        public void run() {
+		private SnakeModel snakeMod;
+		private int[][] map;
+		private int mapSize;
+		
+		public TheBoard(SnakeModel snakeMod)
+		{
+			this.snakeMod = snakeMod;
+			this.map = snakeMod.giveMap();
+			this.mapSize = snakeMod.giveSize();
+		}
+		
+		public void paint(Graphics g) {
 
-            theBoard.repaint();
-        }
+    	   	// Allows me to make many settings changes in regards to graphics
+   	    	Graphics2D graphicSettings = (Graphics2D)g;
+
+   	    	// Draw a black background that is as big as the game board
+
+   	    	graphicSettings.setColor(Color.BLACK);
+
+   	    	graphicSettings.fillRect(0, 0, width, height);
+
+   	    	// Set rendering rules
+
+   	    	// graphicSettings.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    	    		        
+   	    	//Snake body will be white
+    	    		        
+   	    	graphicSettings.setColor(Color.WHITE);
+    	    		        
+   	    	//Set snake on display
+    	    		        
+   	    	for(int i=0; i<this.mapSize; ++i)
+   	    		for(int j=0; j<this.mapSize; ++j)
+   	    			if(this.map[i][j]==1)
+   	    				graphicSettings.fillRect(i*width/this.mapSize, j*height/this.mapSize, 
+   	    		        							width/this.mapSize, height/this.mapSize);
+    	    		        
+   	    	//Set color on orange
+    	    		        
+   	    	graphicSettings.setColor(Color.ORANGE);
+    	    		        
+   	    	//Set snacks on the display(every digit 2 on this.map)
+    	    		        
+   	    	for(int i=0; i<this.mapSize; ++i)
+   	    		for(int j=0; j<this.mapSize; ++j)
+   	    			if(this.map[i][j]==2)
+   	    				graphicSettings.fillRect(i*width/this.mapSize, j*height/this.mapSize, 
+   	    		        							width/this.mapSize, height/this.mapSize);
+    	    	
+   	    	graphicSettings.setColor(Color.RED);
+    	    	
+   	    	graphicSettings.drawString("SCORE: " + String.valueOf(snakeMod.getScore()), 10, 10);
+   	    	//graphicSettings.
+   	    }
+		
+		public void run() {
+			this.repaint();
+			
+		}
+    	
     }
 }

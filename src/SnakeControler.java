@@ -1,6 +1,10 @@
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import javax.swing.SwingUtilities;
 
 public final class SnakeControler{
 	//References to SnakeModel, SnakeView and on itself
@@ -11,7 +15,7 @@ public final class SnakeControler{
 	private boolean fail=false;
 	
 	//Executor for refreshing the SnakeModel
-	private ScheduledThreadPoolExecutor executor;
+	private ScheduledExecutorService executor;
 	
 	
 	public static void main(String[] args) {
@@ -27,12 +31,6 @@ public final class SnakeControler{
 		this.snakeView = new SnakeView(this.snakeMod);
 		this.snakeView.setSnakeControler(this);
 		
-		//Adds snack to SnakeModel
-		this.snakeMod.addSnack();
-		
-		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
-    	executor.scheduleAtFixedRate(new Run(), 0, 150, TimeUnit.MILLISECONDS);
-		
 	}
 	
 	class Run implements Runnable
@@ -47,7 +45,10 @@ public final class SnakeControler{
 			snakeMod.refresh();
 			if(thisSnakeCont.fail)
 			{
-				
+				thisSnakeCont.setFail(false);
+				snakeView.stopRefreshing();
+				snakeView.showMenu();
+				executor.shutdown();
 			}
 		}
 		
@@ -72,10 +73,7 @@ public final class SnakeControler{
 	public void startGame()
 	{
 		this.snakeMod.reset();
-		//Adds snack to SnakeModel
-		this.snakeMod.addSnack();
-				
-		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+		executor = Executors.newSingleThreadScheduledExecutor();
 		executor.scheduleAtFixedRate(new Run(), 0, 150, TimeUnit.MILLISECONDS);
 	}
 }

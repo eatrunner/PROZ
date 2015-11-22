@@ -23,12 +23,7 @@ public class SnakeModel
 		this.snacks=new Snacks();
 		this.move = Directions.RIGHT;
 		this.setScore(0);
-		for(int i=0; i<size; ++i)
-			for(int j=0; j<size; ++j)
-				if(this.snake.isFree(i,j))
-					this.map[i][j]=0;
-				else
-					this.map[i][j]=1;
+		this.refresh();
 	}
 	//Function refresh updates map status
 	public void refresh()
@@ -49,6 +44,11 @@ public class SnakeModel
 	public void reset()
 	{
 		this.snake = new Snake(this.size);
+		this.snacks = new Snacks();
+		this.addSnack();
+		this.setScore(0);
+		this.refresh();
+		this.move = Directions.RIGHT;
 	}
 	//Function isFree checks whether point given by coordinates is taken
 	private boolean isFree(int x, int y)
