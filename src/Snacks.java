@@ -1,14 +1,25 @@
 import java.awt.*;
 import java.util.*;
+/**
+ * Contains list of snacks.
+ * @author karol
+ *
+ */
 public class Snacks {
 	private ArrayList<Point> snackList;
-	//Snacks Constructor
+	/**
+	 * Snacks Constructor
+	 */
 	public Snacks()
 	{
 		snackList=new ArrayList<Point>();
 	}
-	//Function addSnack adds snack. Coordinates must be provided.
-	//Returns true when operation succeeded
+	/**
+	 * Function addSnack adds snack.
+	 * @param x 1st coordinate
+	 * @param y 2nd coordinate
+	 * @return true-succes, false-fail
+	 */
 	public boolean addSnack(int x, int y)
 	{
 		ListIterator<Point> it=this.snackList.listIterator();
@@ -28,8 +39,12 @@ public class Snacks {
 		it.add(tmp);
 		return true;
 	}
-	//Function remove removes snack with given coordinates.
-	//Returns true when succeeded
+	/**
+	 * Function remove removes snack with given coordinates.
+	 * @param x 1st coordinate
+	 * @param y 2nd coordinate
+	 * @return true-succes, false-fail
+	 */
 	public boolean remove(int x, int y)
 	{
 		Point tmp=new Point(x,y), listEl;
@@ -45,7 +60,12 @@ public class Snacks {
 		}
 		return false;
 	}
-	//Function isFree checks whether point given by coordinates is taken by any snack
+	/**
+	 * Function isFree checks whether point given by coordinates is taken by any snack
+	 * @param x 1st coordinate
+	 * @param y 2nd coordinate
+	 * @return true-free space, false-space taken
+	 */
 	public boolean isFree(int x, int y)
 	{
 		Point e=new Point(x,y), tmp;

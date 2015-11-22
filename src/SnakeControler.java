@@ -1,29 +1,37 @@
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import javax.swing.SwingUtilities;
-
+/**
+ * This is controler of Snake application.
+ * Contains main function.
+ * @author Karol Niedzielewski
+ *
+ */
 public final class SnakeControler{
-	//References to SnakeModel, SnakeView and on itself
+	///References to SnakeModel, SnakeView and on itself
 	private SnakeModel snakeMod;
 	private SnakeView snakeView;
 	private SnakeControler thisSnakeCont = this;
-	//Variable tells whether fail was made
+	///Variable tells whether fail was made
 	private boolean fail=false;
 	
-	//Executor for refreshing the SnakeModel
+	///Executor for refreshing the SnakeModel
 	private ScheduledExecutorService executor;
-	
+	/**
+	 * Main function.
+	 * @param args
+	 */
 	
 	public static void main(String[] args) {
 		
 		new SnakeControler();
 
 	}
-	//SnakeControler Constructor
+	/**
+	 * Constructor.
+	 * Creates SnakeModel object and SnakeView object and saves references to both.
+	 */
 	public SnakeControler()
 	{
 		//Creating objects of SnakeModel and SnakeView class
@@ -32,17 +40,26 @@ public final class SnakeControler{
 		this.snakeView.setSnakeControler(this);
 		
 	}
-	
+	/**
+	 * Contains main loop of game.
+	 */
 	class Run implements Runnable
 	{
-	
+		/**
+		 * Empty constructor.
+		 */
 		public Run() {}
+		/**
+		 *  Handles all changes made in Model during the game.
+		 *  If any mistake made stops game and sends orders View to display Menu.
+		 */
 		public void run() 
 		{
 			//Moves snake and and sets setFail for true when move impossible to make
 			thisSnakeCont.setFail(!snakeMod.moveSnake());
 			//refreshes gameboard
 			snakeMod.refresh();
+			//If fail was made stops game and displays menu.
 			if(thisSnakeCont.fail)
 			{
 				thisSnakeCont.setFail(false);
@@ -51,25 +68,34 @@ public final class SnakeControler{
 				executor.shutdown();
 			}
 		}
-		
 	
 	}
-	
+	/**
+	 * Sets fail.
+	 * @param fail value of fail to be set.
+	 */
 	public void setFail(boolean fail)
 	{
 		this.fail=fail;
 	}
-	
+	/**
+	 * Returns value of fail.
+	 * @return fail
+	 */
 	public boolean getFail()
 	{
 		return this.fail;
 	}
-	//Function stops app
+	/**
+	 * Abort program.
+	 */
 	public void abort()
 	{
 		System.exit(0);
 	}
-	
+	/**
+	 * Starts game.
+	 */
 	public void startGame()
 	{
 		this.snakeMod.reset();

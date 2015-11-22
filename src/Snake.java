@@ -3,14 +3,21 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 
-//Snake class
+/**
+ * Contains essential information and methods of snake. 
+ * @author karol
+ *
+ */
 public class Snake
 {
 	//Array body contains every point of snake on the map
 	private ArrayList<Point> body;
 	private int length;
-	//Constructor of class snake
-	//Head of the snake is set to center of the map
+	/**
+	 * Constructor of class snake.
+	 * Head of the snake is set to center of the map
+	 * @param mapSize size of game board
+	 */
 	public Snake(int mapSize)
 	{
 		this.length=5;
@@ -21,8 +28,13 @@ public class Snake
 			body.add(new Point(mapSize-i, mapSize));
 		}
 	}
-	//Function move moves head of the snake in given direction
-	//Direction and size of of map must be provided
+	/**
+	 * Function move moves head of the snake in given direction.
+	 * Direction and size of of map must be provided
+	 * @param direct directions of next move
+	 * @param mapSize size of game board
+	 * @return true-move was made, false-move cannot be made
+	 */
 	public boolean move(Directions direct, int mapSize)
 	{
 		ListIterator<Point> it=this.body.listIterator();
@@ -61,7 +73,9 @@ public class Snake
 			default: return false;
 		}
 	}
-	//Moves head of the snake up with all its body
+	/**
+	 * Moves head of the snake up with all its body
+	 */
 	private void moveUp()
 	{
 		ListIterator<Point> it=this.body.listIterator();
@@ -77,7 +91,9 @@ public class Snake
 			tmp2=tmp1;
 		}
 	}
-	//Moves head of the snake down with all its body
+	/**
+	 * Moves head of the snake down with all its body
+	 */
 	private void moveDown()
 	{
 		ListIterator<Point> it=this.body.listIterator();
@@ -93,7 +109,9 @@ public class Snake
 			tmp2=tmp1;
 		}
 	}
-	//Moves head of the snake left with all its body
+	/**
+	 * Moves head of the snake left with all its body
+	 */
 	private void moveLeft()
 	{
 		ListIterator<Point> it=this.body.listIterator();
@@ -109,7 +127,9 @@ public class Snake
 			tmp2=tmp1;
 		}
 	}
-	//Moves head of the snake right with all its body
+	/**
+	 * Moves head of the snake right with all its body
+	 */
 	private void moveRight()
 	{
 		ListIterator<Point> it=this.body.listIterator();
@@ -125,7 +145,11 @@ public class Snake
 			tmp2=tmp1;
 		}
 	}
-	//Function isFree checks whether given point is taken by snake
+	/**
+	 * Function isFree checks whether given point is taken by snake
+	 * @param tmp point method checks
+	 * @return true-free space, false-space taken
+	 */
 	private boolean isFree(Point tmp)
 	{
 		ListIterator<Point> it=this.body.listIterator();
@@ -136,7 +160,12 @@ public class Snake
 		}
 		return true;
 	}
-	//Function isFree checks whether point given by coordinates is taken by snake
+	/**
+	 * Function isFree checks whether point given by coordinates is taken by snake
+	 * @param x 1st coordinate
+	 * @param y 2nd coordinate
+	 * @return	true-free space, false-space taken
+	 */
 	public boolean isFree(int x, int y)
 	{
 		ListIterator<Point> it=this.body.listIterator();
@@ -149,21 +178,30 @@ public class Snake
 		}
 		return true;
 	}
-	//Function grow adds new point to snake
+	/**
+	 * Function grow adds new point to snake
+	 * @param newTail new point of snake. Must be next to its current tail(last point)
+	 */
 	public void grow(Point newTail)
 	{
 		//adds new point to snake
 		this.body.add(newTail);
 		this.length++;
 	}
-	//Function getHead returns head point
+	/**
+	 * Returns head point
+	 * @return head point(1st point)
+	 */
 	public Point getHead()
 
 	{
 		ListIterator<Point> it=this.body.listIterator();
 		return it.next();
 	}
-	//Function getTail returns tail point
+	/**
+	 * Function getTail returns 
+	 * @return tail point(last snake point)
+	 */
 	public Point getTail()
 	{
 		ListIterator<Point> it=this.body.listIterator();

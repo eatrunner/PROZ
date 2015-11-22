@@ -18,12 +18,14 @@ import javax.swing.*;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
+/**
+ * Contains all essential methods and object to display program.
+ * @author karol
+ *
+ */
 public class SnakeView extends JFrame
 {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	private int width = 600;
     private int height = 600;
@@ -39,7 +41,10 @@ public class SnakeView extends JFrame
   	private JTextArea scoreLayout;
   	TheBoard theBoard;
   	private ScheduledThreadPoolExecutor executor;
-    
+    /**
+     * Constructor. Sets all essential JFrame options and displays Menu.
+     * @param snakeModel reference to object of SnakeModel class.
+     */
     public SnakeView(SnakeModel snakeModel)
     {
     	this.snakeMod = snakeModel;
@@ -53,9 +58,10 @@ public class SnakeView extends JFrame
     	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     	
     	this.prepareMenu();
-    	//this.add(new ImageComponent("/home/karol/Pulpit/Chiquita_Minionek3.jpg"));
   
-    	//Creates KeyListener and adds it to frame
+    	/**
+    	 * Creates KeyListener and adds it to frame
+    	 */
  		addKeyListener(new KeyListener() {
 
     		@Override
@@ -101,12 +107,12 @@ public class SnakeView extends JFrame
     	});
  		
  		this.executor.execute(new ShowMenu());
- 		
- 		
-    			
-    	
     }
-    
+    /**
+     * Contains every action event for buttons.
+     * @author karol
+     *
+     */
     private class ListenForButton implements ActionListener
 	{
 
@@ -134,7 +140,17 @@ public class SnakeView extends JFrame
 			}
 		}
 	}
-    
+    /**
+     * Adds component to panel with specified options.
+     * @param thePanel 
+     * @param comp component to add.
+     * @param xPos	
+     * @param yPos
+     * @param compWidth
+     * @param compHeight
+     * @param place 	must be GridBagConstraints enum type
+     * @param stretch	must be GridBagConstraints enum type
+     */
 	private void addComp(JPanel thePanel, JComponent comp, int xPos, int yPos,
 				int compWidth, int compHeight, int place, int stretch)
 	{
@@ -161,21 +177,25 @@ public class SnakeView extends JFrame
 		thePanel.add(comp, gridConstraints);
 		}
 	
-
+	/**
+	 * Sets reference on SnakeControler object.
+	 * @param snakeCont
+	 */
 	public void setSnakeControler(SnakeControler snakeCont)
 	{
 		this.snakeCont = snakeCont;
 	}
-    
-       
-
-    
+    /**
+     * Stops refreshing game board and removes it from frame.
+     */
     public void stopRefreshing()
     {
     	executor.shutdown();
     	this.remove(theBoard);
     }
-    
+    /**
+     * Prepares menu panel.
+     */
     private void prepareMenu()
     {
     	
@@ -202,7 +222,9 @@ public class SnakeView extends JFrame
     	this.addComp(this.menuPanel, this.newGameButton, 0, 1, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
     	this.addComp(this.menuPanel, this.exitButton, 0, 2, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
     }
-    
+    /**
+     * Displays menu.
+     */
     public void showMenu()
     {
     	this.prepareMenu();
@@ -210,12 +232,18 @@ public class SnakeView extends JFrame
 		this.add(this.menuPanel);
 		this.setVisible(true);
     }
-    
+    /**
+     * Contains menu display method. 
+     * @author karol
+     *
+     */
     class ShowMenu implements Runnable
     {
 
     	public ShowMenu(){}
-
+    	/**
+    	 * Prepares menu panel and displays it.
+    	 */
 		public void run() {
 			prepareMenu();
 			showMenu();
@@ -223,7 +251,11 @@ public class SnakeView extends JFrame
 		}
     	
     }
-    
+    /**
+     * Contains display game board method that displays game board on screen.
+     * @author karol
+     *
+     */
     class TheBoard extends JComponent implements Runnable
     {
     	 /**
@@ -234,14 +266,19 @@ public class SnakeView extends JFrame
 		private SnakeModel snakeMod;
 		private int[][] map;
 		private int mapSize;
-		
+		/**
+		 * Constructor.
+		 * @param snakeMod reference on SnakeModel object.
+		 */
 		public TheBoard(SnakeModel snakeMod)
 		{
 			this.snakeMod = snakeMod;
 			this.map = snakeMod.giveMap();
 			this.mapSize = snakeMod.giveSize();
 		}
-		
+		/**
+		 * Method displays board on screen.
+		 */
 		public void paint(Graphics g) {
 
     	   	// Allows me to make many settings changes in regards to graphics
@@ -286,7 +323,9 @@ public class SnakeView extends JFrame
    	    	graphicSettings.drawString("SCORE: " + String.valueOf(snakeMod.getScore()), 10, 10);
    	    	//graphicSettings.
    	    }
-		
+		/**
+		 * Runs paint method.
+		 */
 		public void run() {
 			this.repaint();
 			

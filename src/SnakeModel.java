@@ -6,15 +6,24 @@
 
 import java.awt.*;
 import java.util.*;
+/**
+ * Contains game mechanics.
+ * @author karol
+ *
+ */
 public class SnakeModel
 {
+	///Game board
 	private int[][] map;//values: 0-free space, 1-snake, 2-snack.
 	private int size;
 	private Snake snake;
 	private Snacks snacks;
 	private Directions move;
 	private int score;
-	//SnakeModel Constructor
+	/**
+	 * Constructor.
+	 * @param size size of square game board
+	 */
 	public SnakeModel(int size)
 	{
 		this.map=new int[size][size];
@@ -25,7 +34,9 @@ public class SnakeModel
 		this.setScore(0);
 		this.refresh();
 	}
-	//Function refresh updates map status
+	/**
+	 * Refreshes game board to current view.
+	 */
 	public void refresh()
 	{
 		//iterate through map and checks if place is taken
@@ -40,7 +51,9 @@ public class SnakeModel
 						this.map[i][j]=0;
 			}
 	}
-	//Function reset resets Model to its starting point
+	/**
+	 * Resets game board to its primary view.
+	 */
 	public void reset()
 	{
 		this.snake = new Snake(this.size);
@@ -50,7 +63,12 @@ public class SnakeModel
 		this.refresh();
 		this.move = Directions.RIGHT;
 	}
-	//Function isFree checks whether point given by coordinates is taken
+	/**
+	 * Checks whether point given by coordinates is taken
+	 * @param x 1st coordinate
+	 * @param y 2nd coordinate
+	 * @return true-free space, false-taken space 
+	 */
 	private boolean isFree(int x, int y)
 	{
 		if(map[x][y]==0)
@@ -59,7 +77,11 @@ public class SnakeModel
 			return false;
 				
 	}
-	//Function isFree checks whether given point is free
+	/**
+	 * Checks whether given point is free
+	 * @param tmp point method checks
+	 * @return	true-free space, false-taken space 
+	 */
 	private boolean isFree(Point tmp)
 	{
 		if(map[(int)tmp.getX()][(int)tmp.getY()]==0)
@@ -67,7 +89,9 @@ public class SnakeModel
 		else 
 			return false;
 	}
-	//Function addSnack adds new snack to map
+	/**
+	 * Function addSnack adds new snack to game board
+	 */
 	public void addSnack()
 	{
 		Random rand=new Random();
@@ -85,7 +109,10 @@ public class SnakeModel
 			
 		}
 	}
-	//Function moveSnake move snake(if possible) in provided direction
+	/**
+	 * Function moveSnake move snake(if possible) in provided direction
+	 * @return true-move was made, false-move cannot be made
+	 */
 	public boolean moveSnake()
 	{
 		Directions direct=this.move;
@@ -102,9 +129,10 @@ public class SnakeModel
 		default:return false;
 		}
 	}
-	/*
-	 * Function moveUP checks whether move up is possible if not returns false
+	/**
+	 * Checks whether move up is possible if not returns false
 	 * Otherwise move snake and returns true
+	 * @return true-move was made, false-made cannot be made
 	 */
 	private boolean moveUP()
 	{
@@ -134,9 +162,10 @@ public class SnakeModel
 			return false;
 		return false;
 	}
-	/*
+	/**
 	 * Function moveDown checks whether move down is possible if not returns false
 	 * Otherwise move snake and returns true
+	 * @return true-move was made, false-made cannot be made
 	 */
 	private boolean moveDown()
 	{
@@ -168,6 +197,7 @@ public class SnakeModel
 	/*
 	 * Function moveDown checks whether move right is possible if not returns false
 	 * Otherwise move snake and returns true
+	 * @return true-move was made, false-made cannot be made
 	 */
 	private boolean moveRight()
 	{
@@ -199,6 +229,7 @@ public class SnakeModel
 	/*
 	 * Function moveDown checks whether move left is possible if not returns false
 	 * Otherwise move snake and returns true
+	 * @return true-move was made, false-made cannot be made
 	 */
 	private boolean moveLeft()
 	{
@@ -227,31 +258,50 @@ public class SnakeModel
 			return false;
 		return false;
 	}
-	
+	/**
+	 * 
+	 * @return game board size
+	 */
 	public int giveSize()
 	{
 		return size;
 	}
-	
+	/**
+	 * 
+	 * @return copy of game board
+	 */
 	public int[][] giveMap()
 	{
 		int[][] map = this.map;
 		return map;
 	}
-	
+	/**
+	 * Sets directions of next move.
+	 * @param direct Directions enum type
+	 */
 	public void setMove(Directions direct)
 	{
 		this.move=direct;
 	}
-	
+	/**
+	 * 
+	 * @return next move
+	 */
 	public Directions getMove()
 	{
 		return this.move;
 	}
-	
+	/**
+	 * 
+	 * @return current score
+	 */
 	public int getScore() {
 		return score;
 	}
+	/**
+	 * 
+	 * @param score value of score
+	 */
 	public void setScore(int score) {
 		this.score = score;
 	}
