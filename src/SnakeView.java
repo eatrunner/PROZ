@@ -1,21 +1,34 @@
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.beans.PropertyVetoException;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.swing.*;
 
-
-
+import java.util.ArrayList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 /**
@@ -39,6 +52,9 @@ public class SnakeView extends JFrame
   	private JButton newGameButton;
   	private JButton exitButton;
   	private JTextArea scoreLayout;
+  	private JButton scoresButton;
+  	
+  	private JInternalFrame scores;
   	TheBoard theBoard;
   	private ScheduledThreadPoolExecutor executor;
     /**
@@ -50,10 +66,10 @@ public class SnakeView extends JFrame
     	this.snakeMod = snakeModel;
     	//Setting frame display options
     	this.setTitle("Snake");	
-    	this.setSize(600,600);
+    	this.setSize(this.width, this.height);
     	this.setLocationRelativeTo(null);
     	this.setResizable(false);
-    	executor = new ScheduledThreadPoolExecutor(5);
+    	executor = new ScheduledThreadPoolExecutor(1);
     	//Closes app when 'x' button pressed
     	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     	
@@ -100,11 +116,11 @@ public class SnakeView extends JFrame
 
     		@Override
     		public void keyTyped(KeyEvent e) {
-    			// TODO Auto-generated method stub
     					
     		}
     				
     	});
+ 		
  		
  		this.executor.execute(new ShowMenu());
     }
@@ -137,6 +153,12 @@ public class SnakeView extends JFrame
 			{
 				//Closes app
 				snakeCont.abort();
+			}
+			
+			if(e.getSource() == scoresButton)
+			{
+				executor = new ScheduledThreadPoolExecutor(1);
+				executor.execute(new ShowScores());
 			}
 		}
 	}
@@ -176,7 +198,6 @@ public class SnakeView extends JFrame
 
 		thePanel.add(comp, gridConstraints);
 		}
-	
 	/**
 	 * Sets reference on SnakeControler object.
 	 * @param snakeCont
@@ -204,6 +225,7 @@ public class SnakeView extends JFrame
     	this.newGameButton = new JButton("New Game");
     	this.exitButton = new JButton("Exit");
     	this.scoreLayout = new JTextArea("Score: " + String.valueOf(this.snakeMod.getScore()));
+    	this.scoresButton = new JButton("Best scores");
     	this.scoreLayout.setEditable(false);
     			
     	this.menuPanel.setLayout(new GridBagLayout());
@@ -215,12 +237,15 @@ public class SnakeView extends JFrame
     	//Adds ActionListener to buttons
     	this.newGameButton.addActionListener(lForButton);
     	this.exitButton.addActionListener(lForButton);
+    	this.scoresButton.addActionListener(lForButton);
     		
     			
     	//Adds elements to menuPanel
     	this.addComp(this.menuPanel, this.scoreLayout, 0, 0, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
     	this.addComp(this.menuPanel, this.newGameButton, 0, 1, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
-    	this.addComp(this.menuPanel, this.exitButton, 0, 2, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
+    	this.addComp(this.menuPanel, this.scoresButton, 0, 2, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
+    	this.addComp(this.menuPanel, this.exitButton, 0, 3, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
+    	
     }
     /**
      * Displays menu.
@@ -251,6 +276,29 @@ public class SnakeView extends JFrame
 		}
     	
     }
+    
+    class ShowScores implements Runnable
+    {
+    	public ShowScores(){}
+		
+		public void run() {
+			thisSnakeView.setVisible(false);
+			scores = new Scores();
+			thisSnakeView.remove(menuPanel);
+			thisSnakeView.add(scores);
+			try {
+				scores.setSelected(true);
+			} catch (PropertyVetoException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			scores.setVisible(true);
+			thisSnakeView.setVisible(true);
+			thisSnakeView.add(menuPanel);
+		}
+    	
+    }
+    
     /**
      * Contains display game board method that displays game board on screen.
      * @author karol
@@ -329,6 +377,122 @@ public class SnakeView extends JFrame
 		public void run() {
 			this.repaint();
 			
+		}
+    	
+    }
+    
+    class Scores extends JInternalFrame
+    {
+    	final Path path = Paths.get("scores");
+    	private ArrayList<Score> scoresList;
+    	private JPanel panel;
+    	private JTextArea first;
+    	private JTextArea second;
+    	private JTextArea third;
+    	private JTextArea fourth;
+    	private JTextArea fifth;
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		public Scores()
+		{
+			super("Scores",
+					true, true, true, true
+					);
+			this.scoresList = new ArrayList<Score>();
+			Charset charset = Charset.forName("US-ASCII");
+			//Reads scores from file
+			try (BufferedReader reader = Files.newBufferedReader(this.path, charset)) {
+			    String line = null;
+			    for (int i=0; i<5 && ((line = reader.readLine()) != null); ++i) {
+			        System.out.println(line);
+			        this.scoresList.add(new Score(line));
+			    }
+			} catch (IOException x) {
+			    System.err.format("IOException: %s%n", x);
+			}
+			//Prepares frame for display
+			this.setLocation(0, 0);
+			this.setResizable(true);
+			
+			this.panel = new JPanel();
+			this.panel.setPreferredSize(new Dimension(100, 200));
+			Score tmp = this.scoresList.get(0);
+			this.first = new JTextArea(tmp.name + "\t" + String.valueOf(tmp.score));
+			tmp = this.scoresList.get(1);
+			this.second = new JTextArea(tmp.name + "\t" + String.valueOf(tmp.score));
+			tmp = this.scoresList.get(2);
+			this.third = new JTextArea(tmp.name + "\t" + String.valueOf(tmp.score));
+			tmp = this.scoresList.get(3);
+			this.fourth = new JTextArea(tmp.name + "\t" + String.valueOf(tmp.score));
+			tmp = this.scoresList.get(4);
+			this.fifth = new JTextArea(tmp.name + "\t" + String.valueOf(tmp.score));
+			this.panel.add(this.first);
+			this.panel.add(this.second);
+			this.panel.add(this.third);
+			this.panel.add(this.fourth);
+			this.panel.add(this.fifth);
+			this.panel.setAlignmentY(CENTER_ALIGNMENT);
+			
+			this.add(this.panel);
+		}
+		
+		public Score giveScore(int index)
+		{
+			return this.scoresList.get(index);
+		}
+		
+		public void save()
+		{
+			Charset charset = Charset.forName("US-ASCII");
+			try (BufferedWriter writer = Files.newBufferedWriter(this.path, charset)) {
+				for(int i = 0; i<5 && i<this.scoresList.size(); ++i)
+				{
+					Score tmp = this.scoresList.get(i);
+					String s = tmp.name + "\t" + String.valueOf(tmp.score);
+					writer.write(s, 0, s.length());
+					
+				}
+					
+			} catch (IOException x) {
+			    System.err.format("IOException: %s%n", x);
+			}
+		}
+		
+    	
+    }
+    
+    class Score
+    {
+    	private String name;
+    	private int score;
+    	public Score(String name, int score)
+    	{
+    		this.setName(name);
+    		this.setScore(score);
+    	}
+    	public Score(String string)
+    	{
+    			for(int i=0; i<string.length(); ++i)
+    				if(string.charAt(i)=='\t')
+    				{
+    					this.name = string.substring(0, i);
+    					this.score = new Integer(string.substring(++i));
+    				}
+    	}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public int getScore() {
+			return score;
+		}
+		public void setScore(int score) {
+			this.score = score;
 		}
     	
     }
