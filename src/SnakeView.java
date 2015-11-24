@@ -382,7 +382,11 @@ public class SnakeView extends JFrame
 		}
     	
     }
-    
+    /**
+     * Internal frame that displays highscores.
+     * @author karol
+     *
+     */
     class Scores extends JInternalFrame
     {
     	final Path path = Paths.get("scores");
@@ -399,7 +403,9 @@ public class SnakeView extends JFrame
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		
+		/*
+		 * Constructor. Reads high scores from file named "scores".
+		 */
 		public Scores()
 		{
 			super("Scores",
@@ -422,9 +428,10 @@ public class SnakeView extends JFrame
 			this.setResizable(true);
 			this.setSize(new Dimension(200,200));
 			this.setMaximumSize(new Dimension(200,200));
-			
+			//Prepares panel
 			this.panel = new JPanel();
 			this.panel.setPreferredSize(new Dimension(100, 200));
+			//Prepare 5 best scores for display
 			Score tmp = this.scoresList.get(0);
 			this.first = new JTextArea("1."+tmp.name + "\t" + String.valueOf(tmp.score));
 			tmp = this.scoresList.get(1);
@@ -435,6 +442,7 @@ public class SnakeView extends JFrame
 			this.fourth = new JTextArea("4."+tmp.name + "\t" + String.valueOf(tmp.score));
 			tmp = this.scoresList.get(4);
 			this.fifth = new JTextArea("5."+tmp.name + "\t" + String.valueOf(tmp.score));
+			//--
 			this.addButton = new JButton("Add");
 			this.nameField = new JTextField("Name", 15);
 			ListenForButton lForButton = new ListenForButton();
@@ -444,15 +452,18 @@ public class SnakeView extends JFrame
 			this.panel.add(this.third);
 			this.panel.add(this.fourth);
 			this.panel.add(this.fifth);
-			
-			
+					
 			
 			this.panel.setAlignmentY(CENTER_ALIGNMENT);
 			this.panel.add(this.nameField);
 			this.panel.add(this.addButton);
 			this.add(this.panel);
 		}
-		
+		/**
+		 * Button listener
+		 * @author karol
+		 *
+		 */
 		private class ListenForButton implements ActionListener
 		{
 
@@ -480,12 +491,19 @@ public class SnakeView extends JFrame
 			}
 			
 		}
+		/**
+		 * Returns score of given position.
+		 * @param index Position in scores.
+		 * @return score of given index.
+		 */
 		
 		public Score giveScore(int index)
 		{
 			return this.scoresList.get(index);
 		}
-		
+		/**
+		 * Saves 5 best scores to file.
+		 */
 		public void save()
 		{
 			Charset charset = Charset.forName("US-ASCII");
@@ -498,23 +516,37 @@ public class SnakeView extends JFrame
 					
 				}
 					
-			} catch (IOException x) {
+			} catch (IOException x) 
+			{
 			    System.err.format("IOException: %s%n", x);
 			}
 		}
 		
     	
     }
-    
+    /**
+     * Score contains name of player and his score.
+     * @author karol
+     *
+     */
     class Score
     {
     	private String name;
     	private int score;
+    	/**
+    	 * Constructor.
+    	 * @param name Player name
+    	 * @param score Players score
+    	 */
     	public Score(String name, int score)
     	{
     		this.setName(name);
     		this.setScore(score);
     	}
+    	/**
+    	 * Constructor.
+    	 * @param string (name + "\t" + score)
+    	 */
     	public Score(String string)
     	{
     			for(int i=0; i<string.length(); ++i)
@@ -524,15 +556,31 @@ public class SnakeView extends JFrame
     					this.score = new Integer(string.substring(++i));
     				}
     	}
+    	/**
+    	 * Returns player name.
+    	 * @return name
+    	 */
 		public String getName() {
 			return name;
 		}
+		/**
+		 * Sets player name.
+		 * @param name players name
+		 */
 		public void setName(String name) {
 			this.name = name;
 		}
+		/**
+		 * Returns players score.
+		 * @return score
+		 */
 		public int getScore() {
 			return score;
 		}
+		/**
+		 * Sets players score
+		 * @param score
+		 */
 		public void setScore(int score) {
 			this.score = score;
 		}
