@@ -15,6 +15,7 @@ public final class SnakeControler{
 	private SnakeControler thisSnakeCont = this;
 	///Variable tells whether fail was made
 	private boolean fail=false;
+	private int interval = 200;
 	
 	///Executor for refreshing the SnakeModel
 	private ScheduledExecutorService executor;
@@ -100,8 +101,19 @@ public final class SnakeControler{
 	{
 		this.snakeMod.reset();
 		executor = Executors.newSingleThreadScheduledExecutor();
-		executor.scheduleAtFixedRate(new Run(), 0, 150, TimeUnit.MILLISECONDS);
+		executor.scheduleAtFixedRate(new Run(), 0, this.interval, TimeUnit.MILLISECONDS);
 	}
+	public int getInterval() {
+		return interval;
+	}
+	public void setInterval(int interval) {
+		this.interval = interval;
+	}
+	public void setSpeed(int i)
+	{
+		this.setInterval(20+i*20);
+	}
+	
 }
 
 

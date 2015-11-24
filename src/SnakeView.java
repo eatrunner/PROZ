@@ -12,6 +12,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyVetoException;
@@ -27,6 +29,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,6 +59,7 @@ public class SnakeView extends JFrame
   	private JButton exitButton;
   	private JTextArea scoreLayout;
   	private JButton scoresButton;
+  	private JSlider speedSlider;
   	
   	private JInternalFrame scores;
   	TheBoard theBoard;
@@ -229,6 +234,21 @@ public class SnakeView extends JFrame
     	this.scoreLayout = new JTextArea("Score: " + String.valueOf(this.snakeMod.getScore()));
     	this.scoresButton = new JButton("Best scores");
     	this.scoreLayout.setEditable(false);
+    	
+    	//Creating speedScrollBar
+    	this.speedSlider = new JSlider(1,10); 
+    	this.speedSlider.setOrientation(JSlider.VERTICAL);
+    	this.speedSlider.setInverted(true);
+    	this.speedSlider.addChangeListener(new ChangeListener(){
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				snakeCont.setSpeed(speedSlider.getValue());
+				
+			}
+    		
+    	});
+    	
     			
     	this.menuPanel.setLayout(new GridBagLayout());
     	this.menuPanel.setMaximumSize(new Dimension(100,100));
@@ -243,10 +263,11 @@ public class SnakeView extends JFrame
     		
     			
     	//Adds elements to menuPanel
-    	this.addComp(this.menuPanel, this.scoreLayout, 0, 0, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
-    	this.addComp(this.menuPanel, this.newGameButton, 0, 1, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
-    	this.addComp(this.menuPanel, this.scoresButton, 0, 2, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
-    	this.addComp(this.menuPanel, this.exitButton, 0, 3, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
+    	this.addComp(this.menuPanel, this.scoreLayout, 0, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
+    	this.addComp(this.menuPanel, this.newGameButton, 0, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
+    	this.addComp(this.menuPanel, this.speedSlider, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
+    	this.addComp(this.menuPanel, this.scoresButton, 0, 3, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
+    	this.addComp(this.menuPanel, this.exitButton, 0, 4, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE);
     	
     }
     /**
@@ -486,6 +507,9 @@ public class SnakeView extends JFrame
 						}
 					}
 					save();
+					thisSnakeView.remove(scores);
+					executor = new ScheduledThreadPoolExecutor(1);
+					executor.execute(new ShowScores());
 				}
 				
 			}
