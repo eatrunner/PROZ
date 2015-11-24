@@ -29,6 +29,8 @@ import java.nio.file.Paths;
 import javax.swing.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.ListIterator;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 /**
@@ -391,6 +393,8 @@ public class SnakeView extends JFrame
     	private JTextArea third;
     	private JTextArea fourth;
     	private JTextArea fifth;
+    	private JButton addButton;
+    	private JTextField nameField;
 		/**
 		 * 
 		 */
@@ -414,29 +418,67 @@ public class SnakeView extends JFrame
 			    System.err.format("IOException: %s%n", x);
 			}
 			//Prepares frame for display
-			this.setLocation(0, 0);
+			
 			this.setResizable(true);
+			this.setSize(new Dimension(200,200));
+			this.setMaximumSize(new Dimension(200,200));
 			
 			this.panel = new JPanel();
 			this.panel.setPreferredSize(new Dimension(100, 200));
 			Score tmp = this.scoresList.get(0);
-			this.first = new JTextArea(tmp.name + "\t" + String.valueOf(tmp.score));
+			this.first = new JTextArea("1."+tmp.name + "\t" + String.valueOf(tmp.score));
 			tmp = this.scoresList.get(1);
-			this.second = new JTextArea(tmp.name + "\t" + String.valueOf(tmp.score));
+			this.second = new JTextArea("2."+tmp.name + "\t" + String.valueOf(tmp.score));
 			tmp = this.scoresList.get(2);
-			this.third = new JTextArea(tmp.name + "\t" + String.valueOf(tmp.score));
+			this.third = new JTextArea("3."+tmp.name + "\t" + String.valueOf(tmp.score));
 			tmp = this.scoresList.get(3);
-			this.fourth = new JTextArea(tmp.name + "\t" + String.valueOf(tmp.score));
+			this.fourth = new JTextArea("4."+tmp.name + "\t" + String.valueOf(tmp.score));
 			tmp = this.scoresList.get(4);
-			this.fifth = new JTextArea(tmp.name + "\t" + String.valueOf(tmp.score));
+			this.fifth = new JTextArea("5."+tmp.name + "\t" + String.valueOf(tmp.score));
+			this.addButton = new JButton("Add");
+			this.nameField = new JTextField("Name", 15);
+			ListenForButton lForButton = new ListenForButton();
+			this.addButton.addActionListener(lForButton);
 			this.panel.add(this.first);
 			this.panel.add(this.second);
 			this.panel.add(this.third);
 			this.panel.add(this.fourth);
 			this.panel.add(this.fifth);
-			this.panel.setAlignmentY(CENTER_ALIGNMENT);
 			
+			
+			
+			this.panel.setAlignmentY(CENTER_ALIGNMENT);
+			this.panel.add(this.nameField);
+			this.panel.add(this.addButton);
 			this.add(this.panel);
+		}
+		
+		private class ListenForButton implements ActionListener
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource() == addButton)
+				{
+					String name = nameField.getText();
+					Score newScore = new Score(name, snakeMod.getScore());
+					ListIterator<Score> it = scoresList.listIterator();
+					for(int i = 0; i<scoresList.size(); ++i)
+					{
+						Score tmp = it.next();
+						if(tmp.getScore() < newScore.getScore())
+						{
+							it.previous();
+							it.add(newScore);
+							break;
+							
+						}
+					}
+					save();
+				}
+				
+			}
+			
 		}
 		
 		public Score giveScore(int index)
@@ -451,7 +493,7 @@ public class SnakeView extends JFrame
 				for(int i = 0; i<5 && i<this.scoresList.size(); ++i)
 				{
 					Score tmp = this.scoresList.get(i);
-					String s = tmp.name + "\t" + String.valueOf(tmp.score);
+					String s = tmp.name + "\t" + String.valueOf(tmp.score) + "\n";
 					writer.write(s, 0, s.length());
 					
 				}
