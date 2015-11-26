@@ -14,7 +14,7 @@ import java.util.*;
 public class SnakeModel
 {
 	///Game board
-	private int[][] map;//values: 0-free space, 1-snake, 2-snack.
+	private Fields[][] map;//values: 0-free space, 1-snake, 2-snack.
 	private int size;
 	private Snake snake;
 	private Snacks snacks;
@@ -26,7 +26,10 @@ public class SnakeModel
 	 */
 	public SnakeModel(int size)
 	{
-		this.map=new int[size][size];
+		this.map=new Fields[size][size];
+		for(int i=0; i<size; ++i)
+			for(int j=0; j<size; ++j)
+				this.map[i][j] = Fields.empty;
 		this.size=size;
 		this.snake=new Snake(size);
 		this.snacks=new Snacks();
@@ -44,11 +47,11 @@ public class SnakeModel
 			for(int j=0; j<this.size; ++j)
 			{
 				if(!this.snake.isFree(i,j))
-					this.map[i][j]=1;
+					this.map[i][j]=Fields.snake;
 				else if(!this.snacks.isFree(i, j))
-						this.map[i][j]=2;
+						this.map[i][j]=Fields.snack;
 					else
-						this.map[i][j]=0;
+						this.map[i][j]=Fields.empty;
 			}
 	}
 	/**
@@ -71,7 +74,7 @@ public class SnakeModel
 	 */
 	private boolean isFree(int x, int y)
 	{
-		if(map[x][y]==0)
+		if(map[x][y]==Fields.empty)
 			return true;
 		else 
 			return false;
@@ -84,7 +87,7 @@ public class SnakeModel
 	 */
 	private boolean isFree(Point tmp)
 	{
-		if(map[(int)tmp.getX()][(int)tmp.getY()]==0)
+		if(map[(int)tmp.getX()][(int)tmp.getY()]==Fields.empty)
 			return true;
 		else 
 			return false;
@@ -141,14 +144,14 @@ public class SnakeModel
 		if(head.getY()==0)
 			return false;
 		//checks whether there's free space for the move
-		if(this.map[(int)head.getX()][(int)head.getY()-1]==0)
+		if(this.map[(int)head.getX()][(int)head.getY()-1]==Fields.empty)
 		{
 			this.snake.move(Directions.UP, this.size);
 			
 			return true;
 		}
 		//Checks whether there's snack in place we want to move
-		if(this.map[(int)head.getX()][(int)head.getY()-1]==2)
+		if(this.map[(int)head.getX()][(int)head.getY()-1]==Fields.snack)
 		{
 			Point tail=this.snake.getTail();
 			this.snake.move(Directions.UP, this.size);
@@ -158,7 +161,7 @@ public class SnakeModel
 			this.setScore(this.getScore() + 1);
 			return true;
 		}
-		if(this.map[(int)head.getX()][(int)head.getY()-1]==1)
+		if(this.map[(int)head.getX()][(int)head.getY()-1]==Fields.snake)
 			return false;
 		return false;
 	}
@@ -174,13 +177,13 @@ public class SnakeModel
 		if(head.getY()==this.size-1)
 			return false;
 		//checks whether there's free space for the move
-		if(this.map[(int)head.getX()][(int)head.getY()+1]==0)
+		if(this.map[(int)head.getX()][(int)head.getY()+1]==Fields.empty)
 		{
 			this.snake.move(Directions.DOWN, this.size);
 			return true;
 		}
 		//checkes whether there's snack in place we want to move
-		if(this.map[(int)head.getX()][(int)head.getY()+1]==2)
+		if(this.map[(int)head.getX()][(int)head.getY()+1]==Fields.snack)
 		{
 			Point tail=this.snake.getTail();
 			this.snake.move(Directions.DOWN, this.size);
@@ -190,7 +193,7 @@ public class SnakeModel
 			this.setScore(this.getScore() + 1);
 			return true;
 		}
-		if(this.map[(int)head.getX()][(int)head.getY()+1]==1)
+		if(this.map[(int)head.getX()][(int)head.getY()+1]==Fields.snake)
 			return false;
 		return false;
 	}
@@ -206,13 +209,13 @@ public class SnakeModel
 		if(head.getX()==this.size-1)
 			return false;
 		//checks whether there's free space for the move
-		if(this.map[(int)head.getX()+1][(int)head.getY()]==0)
+		if(this.map[(int)head.getX()+1][(int)head.getY()]==Fields.empty)
 		{
 			this.snake.move(Directions.RIGHT, this.size);
 			return true;
 		}
 		//checks whether there's snack in place we want to move
-		if(this.map[(int)head.getX()+1][(int)head.getY()]==2)
+		if(this.map[(int)head.getX()+1][(int)head.getY()]==Fields.snack)
 		{
 			Point tail=this.snake.getTail();
 			this.snake.move(Directions.RIGHT, this.size);
@@ -222,7 +225,7 @@ public class SnakeModel
 			this.setScore(this.getScore() + 1);
 			return true;
 		}
-		if(this.map[(int)head.getX()+1][(int)head.getY()]==2)
+		if(this.map[(int)head.getX()+1][(int)head.getY()]==Fields.snake)
 			return false;
 		return false;
 	}
@@ -238,13 +241,13 @@ public class SnakeModel
 		if(head.getX()==0)
 			return false;
 		//checks whether there's free space for the move
-		if(this.map[(int)head.getX()-1][(int)head.getY()]==0)
+		if(this.map[(int)head.getX()-1][(int)head.getY()]==Fields.empty)
 		{
 			this.snake.move(Directions.LEFT, this.size);
 			return true;
 		}
 		//checkes whether there's snack in place we want to move
-		if(this.map[(int)head.getX()-1][(int)head.getY()]==2)
+		if(this.map[(int)head.getX()-1][(int)head.getY()]==Fields.snack)
 		{
 			Point tail=this.snake.getTail();
 			this.snake.move(Directions.LEFT, this.size);
@@ -254,7 +257,7 @@ public class SnakeModel
 			this.setScore(this.getScore() + 1);
 			return true;
 		}
-		if(this.map[(int)head.getX()-1][(int)head.getY()]==1)
+		if(this.map[(int)head.getX()-1][(int)head.getY()]==Fields.snake)
 			return false;
 		return false;
 	}
@@ -270,9 +273,9 @@ public class SnakeModel
 	 * 
 	 * @return copy of game board
 	 */
-	public int[][] giveMap()
+	public Fields[][] giveMap()
 	{
-		int[][] map = this.map;
+		Fields[][] map = this.map;
 		return map;
 	}
 	/**

@@ -335,7 +335,7 @@ public class SnakeView extends JFrame
 		private static final long serialVersionUID = 1L;
 
 		private SnakeModel snakeMod;
-		private int[][] map;
+		private Fields[][] map;
 		private int mapSize;
 		/**
 		 * Constructor.
@@ -373,7 +373,7 @@ public class SnakeView extends JFrame
     	    		        
    	    	for(int i=0; i<this.mapSize; ++i)
    	    		for(int j=0; j<this.mapSize; ++j)
-   	    			if(this.map[i][j]==1)
+   	    			if(this.map[i][j]==Fields.snake)
    	    				graphicSettings.fillRect(i*width/this.mapSize, j*height/this.mapSize, 
    	    		        							width/this.mapSize, height/this.mapSize);
     	    		        
@@ -385,7 +385,7 @@ public class SnakeView extends JFrame
     	    		        
    	    	for(int i=0; i<this.mapSize; ++i)
    	    		for(int j=0; j<this.mapSize; ++j)
-   	    			if(this.map[i][j]==2)
+   	    			if(this.map[i][j]==Fields.snack)
    	    				graphicSettings.fillRect(i*width/this.mapSize, j*height/this.mapSize, 
    	    		        							width/this.mapSize, height/this.mapSize);
     	    	
@@ -438,7 +438,6 @@ public class SnakeView extends JFrame
 			try (BufferedReader reader = Files.newBufferedReader(this.path, charset)) {
 			    String line = null;
 			    for (int i=0; i<5 && ((line = reader.readLine()) != null); ++i) {
-			        System.out.println(line);
 			        this.scoresList.add(new Score(line));
 			    }
 			} catch (IOException x) {
